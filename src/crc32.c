@@ -2,7 +2,7 @@
 #define LIBTINYDIGEST_LIBRARY_BUILD
 #endif
 
-#include "../include/crc32.h"
+#include <tinydigest/crc32.h>
 
 static uint32_t crc32_table[256];
 

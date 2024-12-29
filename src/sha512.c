@@ -2,7 +2,8 @@
 #define LIBTINYDIGEST_LIBRARY_BUILD
 #endif
 
-#include "../include/sha512.h"
+#include <tinydigest/sha512.h>
+
 #include <stdlib.h>
 #include <string.h>
 

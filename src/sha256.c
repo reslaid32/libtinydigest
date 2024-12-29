@@ -2,7 +2,8 @@
 #define LIBTINYDIGEST_LIBRARY_BUILD
 #endif
 
-#include "../include/sha256.h"
+#include <tinydigest/sha256.h>
+
 #include <stdlib.h>
 #include <string.h>
 
