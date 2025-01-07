@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# Own gitingore templates
+# VSCode (IDE) settings ignoring
+.vscode
+# Old src files
+.old
+main.c
