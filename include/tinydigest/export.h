@@ -1,6 +1,10 @@
 #ifndef EXPORT_H
 #define EXPORT_H
 
+#ifdef LIBTINYDIGEST_LIBRARY_BUILD
+#define EXPORT_LIBRARY_BUILD
+#endif
+
 #ifdef _BUILD_WITH_EXECUTABLE
 #define EXPORT_API
 #else
