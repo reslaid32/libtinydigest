@@ -6,10 +6,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define SHA2_256_OUTPUT_LENGTH 32
+#define SHA2_256_DIGEST_SIZE 32
 
 LIBTINYDIGEST_API void sha2_256_pad_message(const uint8_t *input, size_t len, uint8_t **padded, size_t *new_len);
 LIBTINYDIGEST_API void sha2_256_process_block(const uint8_t *block, uint32_t H[8]);
-LIBTINYDIGEST_API void sha2_256_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_256_OUTPUT_LENGTH]);
+LIBTINYDIGEST_API void sha2_256_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_256_DIGEST_SIZE]);
 
 #endif // SHA2_256_H

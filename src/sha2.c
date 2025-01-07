@@ -1,6 +1,7 @@
 
 #include <tinydigest/sha2.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -133,7 +134,7 @@ LIBTINYDIGEST_API void sha2_256_process_block(const uint8_t *block, uint32_t H[8
     H[4] += e; H[5] += f; H[6] += g; H[7] += h;
 }
 
-LIBTINYDIGEST_API void sha2_256_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_256_OUTPUT_LENGTH]) {
+LIBTINYDIGEST_API void sha2_256_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_256_DIGEST_SIZE]) {
     uint8_t *padded;
     size_t new_len;
     sha2_256_pad_message(input, len, &padded, &new_len);
@@ -158,7 +159,7 @@ LIBTINYDIGEST_API void sha2_256_compute(const uint8_t *input, size_t len, uint8_
 /* END: SHA2-256 */
 
 /* SHA2-224 */
-LIBTINYDIGEST_API void sha2_224_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_224_OUTPUT_LENGTH]) {
+LIBTINYDIGEST_API void sha2_224_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_224_DIGEST_SIZE]) {
     uint8_t *padded;
     size_t new_len;
     sha2_256_pad_message(input, len, &padded, &new_len);
@@ -185,7 +186,6 @@ LIBTINYDIGEST_API void sha2_224_compute(const uint8_t *input, size_t len, uint8_
 /* SHA2-512 */
 LIBTINYDIGEST_API void sha2_512_pad_message(const uint8_t *input, size_t len, uint8_t **padded, size_t *new_len) {
     size_t bit_len = len * 8;
-    
     size_t padding = (128 - ((len + 16) % 128)) % 128;
     *new_len = len + padding + 16;
 
@@ -193,26 +193,25 @@ LIBTINYDIGEST_API void sha2_512_pad_message(const uint8_t *input, size_t len, ui
     memcpy(*padded, input, len);
 
     (*padded)[len] = 0x80;
-    
-    memset(*padded + len + 1, 0, padding - 1);
+
+    memset(*padded + len + 1, 0, padding);
 
     for (int i = 0; i < 8; ++i) {
         (*padded)[*new_len - 8 + i] = (bit_len >> (8 * (7 - i))) & 0xFF;
     }
 }
 
-
 LIBTINYDIGEST_API void sha2_512_process_block(const uint8_t *block, uint64_t H[8]) {
     uint64_t W[80];
     for (int i = 0; i < 16; ++i) {
-        W[i] = ((uint64_t)block[i * 8] << 56) |
+        W[i] = ((uint64_t)block[i * 8    ] << 56) |
                ((uint64_t)block[i * 8 + 1] << 48) |
                ((uint64_t)block[i * 8 + 2] << 40) |
                ((uint64_t)block[i * 8 + 3] << 32) |
                ((uint64_t)block[i * 8 + 4] << 24) |
                ((uint64_t)block[i * 8 + 5] << 16) |
-               ((uint64_t)block[i * 8 + 6] << 8) |
-               (uint64_t)block[i * 8 + 7];
+               ((uint64_t)block[i * 8 + 6] << 8 ) |
+               ((uint64_t)block[i * 8 + 7]      ) ;
     }
 
     for (int t = 16; t < 80; ++t) {
@@ -234,16 +233,20 @@ LIBTINYDIGEST_API void sha2_512_process_block(const uint8_t *block, uint64_t H[8
     H[4] += e; H[5] += f; H[6] += g; H[7] += h;
 }
 
-LIBTINYDIGEST_API void sha2_512_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_512_OUTPUT_LENGTH]) {
+LIBTINYDIGEST_API void sha2_512_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_512_DIGEST_SIZE]) {
     uint8_t *padded;
     size_t new_len;
     sha2_512_pad_message(input, len, &padded, &new_len);
 
     uint64_t H[8];
-    memcpy(H, SHA2_512_H0, sizeof(uint64_t) * 8);
+    memcpy(H, SHA2_512_H0, sizeof(SHA2_512_H0));
 
     for (size_t i = 0; i < new_len; i += 128) {
-        sha2_512_process_block(padded + i, H);
+        #pragma pack(1)
+        uint8_t *block = padded + i;
+        #pragma pack()
+
+        sha2_512_process_block(block, H);
     }
 
     free(padded);
@@ -262,7 +265,7 @@ LIBTINYDIGEST_API void sha2_512_compute(const uint8_t *input, size_t len, uint8_
 /* END: SHA2-512 */
 
 /* SHA2-384 */
-LIBTINYDIGEST_API void sha2_384_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_384_OUTPUT_LENGTH]) {
+LIBTINYDIGEST_API void sha2_384_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_384_DIGEST_SIZE]) {
     uint8_t *padded;
     size_t new_len;
     sha2_512_pad_message(input, len, &padded, &new_len);
@@ -290,7 +293,7 @@ LIBTINYDIGEST_API void sha2_384_compute(const uint8_t *input, size_t len, uint8_
 /* END: SHA2-384 */
 
 /* SHA2-512/224 */
-LIBTINYDIGEST_API void sha2_512_224_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_512_224_OUTPUT_LENGTH]) {
+LIBTINYDIGEST_API void sha2_512_224_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_512_224_DIGEST_SIZE]) {
     uint8_t *padded;
     size_t new_len;
     sha2_512_pad_message(input, len, &padded, &new_len);
@@ -318,7 +321,7 @@ LIBTINYDIGEST_API void sha2_512_224_compute(const uint8_t *input, size_t len, ui
 /* END: SHA2-512/224 */
 
 /* SHA2-512/256 */
-LIBTINYDIGEST_API void sha2_512_256_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_512_256_OUTPUT_LENGTH]) {
+LIBTINYDIGEST_API void sha2_512_256_compute(const uint8_t *input, size_t len, uint8_t output[SHA2_512_256_DIGEST_SIZE]) {
     uint8_t *padded;
     size_t new_len;
     sha2_512_pad_message(input, len, &padded, &new_len);
