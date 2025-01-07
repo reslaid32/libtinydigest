@@ -1,3 +1,6 @@
+#ifndef LIBTINYDIGEST_LIBRARY_BUILD
+#define LIBTINYDIGEST_LIBRARY_BUILD
+#endif
 
 #include <tinydigest/sha2.h>
 
